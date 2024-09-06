@@ -10,7 +10,6 @@ export default defineConfig({
   },
   manifest: {
     name: 'TypeScript Console',
-    description: 'Run and debug TypeScript code in the Chrome DevTools.',
     content_security_policy: {
       extension_pages:
         "script-src 'self' 'wasm-unsafe-eval'; object-src 'self';",
