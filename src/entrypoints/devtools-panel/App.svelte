@@ -1,32 +1,42 @@
 <script lang="ts">
   import { onDestroy, onMount } from 'svelte'
   import type * as Monaco from 'monaco-editor/esm/vs/editor/editor.api'
-  import initSwc, { transform } from '@swc/wasm-web'
-  import wasmUrl from '@swc/wasm-web/wasm_bg.wasm?url'
+  import { transform, initialize } from 'esbuild-wasm'
+  import wasmUrl from 'esbuild-wasm/esbuild.wasm?url'
+  import { Toaster } from '$lib/components/ui/sonner'
+  import { toast } from 'svelte-sonner'
+  import { serializeError } from 'serialize-error'
+  import { once } from 'lodash-es'
 
   let editor: Monaco.editor.IStandaloneCodeEditor
   let monaco: typeof Monaco
   let editorContainer: HTMLElement
 
-  const fConsole = new Proxy({} as typeof console, {
-    get(_target, prop: keyof typeof console) {
-      return (...args: any[]) => {
-        browser.devtools.inspectedWindow.eval(
-          `console.${prop}(...${JSON.stringify(args)})`,
-        )
-      }
-    },
+  const STORAGE_KEY = 'devtools-editor-content'
+
+  function saveEditorContent() {
+    if (editor) {
+      const content = editor.getValue()
+      localStorage.setItem(STORAGE_KEY, content)
+    }
+  }
+
+  function loadEditorContent(): string {
+    return (
+      localStorage.getItem(STORAGE_KEY) ||
+      "console.log('Hello from Monaco! (the editor, not the city...)')"
+    )
+  }
+
+  const onceInit = once(async () => {
+    await initialize({ wasmURL: wasmUrl })
   })
 
   async function compileCode(code: string) {
-    await initSwc(wasmUrl)
+    await onceInit()
     const result = await transform(code, {
-      jsc: {
-        parser: {
-          syntax: 'typescript',
-        },
-      },
-      sourceMaps: 'inline',
+      loader: 'ts',
+      sourcemap: 'inline',
     })
     return result.code
   }
@@ -35,14 +45,19 @@
     if ((event.ctrlKey || event.metaKey) && event.key === 's') {
       event.preventDefault()
       const code = editor.getValue()
-      let buildCode: string
       try {
-        buildCode = await compileCode(code)
-      } catch (e) {
-        fConsole.error(e)
-        return
+        const buildCode = await compileCode(code)
+        await injectAndExecuteCode(buildCode)
+        toast.success('Code executed successfully')
+      } catch (error) {
+        console.error('Error:', error)
+        toast.error('Compilation Error', {
+          description: serializeError(error).message,
+          duration: 10000, // 显示10秒
+          style:
+            'background: #FEF2F2; color: #991B1B; border: 1px solid #F87171;',
+        })
       }
-      await injectAndExecuteCode(buildCode)
     }
   }
 
@@ -63,11 +78,11 @@
   }
 
   onMount(async () => {
-    monaco = (await import('./monaco')).default
+    const monaco = (await import('./monaco')).default
 
     const initialTheme = detectTheme()
     editor = monaco.editor.create(editorContainer, {
-      value: "console.log('Hello from Monaco! (the editor, not the city...)')",
+      value: loadEditorContent(),
       language: 'typescript',
       theme: initialTheme,
     })
@@ -79,6 +94,11 @@
     window
       .matchMedia('(prefers-color-scheme: dark)')
       .addEventListener('change', updateEditorTheme)
+
+    // 添加内容变化监听器
+    editor.onDidChangeModelContent(() => {
+      saveEditorContent()
+    })
   })
 
   onDestroy(() => {
@@ -91,11 +111,15 @@
     window
       .matchMedia('(prefers-color-scheme: dark)')
       .removeEventListener('change', updateEditorTheme)
+
+    // 保存编辑器内容
+    saveEditorContent()
   })
 </script>
 
 <div class="w-full h-screen">
   <div class="w-full h-full" bind:this={editorContainer} />
+  <Toaster richColors />
 </div>
 
 <style>

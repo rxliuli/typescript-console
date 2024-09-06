@@ -31,7 +31,11 @@
     "@swc/wasm-web": "^1.7.23",
     "bits-ui": "^0.21.13",
     "clsx": "^2.1.1",
+    "esbuild-wasm": "^0.23.1",
     "lodash-es": "^4.17.21",
+    "mode-watcher": "^0.4.1",
+    "serialize-error": "^11.0.3",
+    "svelte-sonner": "^0.3.27",
     "tailwind-merge": "^2.5.2",
     "tailwind-variants": "^0.2.1"
   }
