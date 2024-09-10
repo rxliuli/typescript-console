@@ -4,7 +4,7 @@
 
 Run and debug TypeScript code in the Chrome DevTools.
 
-✨Key features:
+## Features
 
 - Write and run TypeScript directly in DevTools
 - Instant compilation and execution
@@ -13,3 +13,10 @@ Run and debug TypeScript code in the Chrome DevTools.
 
 ![cover1](./public/cover1.png)
 ![cover2](./public/cover2.png)
+
+## Roadmap
+
+- [ ] Support importing npm packages
+- [ ] Support setting tsconfig.json
+- [ ] Support adding breakpoints directly
+- [ ] Support Snippet functionality
