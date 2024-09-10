@@ -1,5 +1,3 @@
-import * as monaco from 'monaco-editor'
-
 // Import the workers in a production-safe way.
 // This is different than in Monaco's documentation for Vite,
 // but avoids a weird error ("Unexpected usage") at runtime
@@ -18,4 +16,4 @@ self.MonacoEnvironment = {
   },
 }
 
-export default monaco
+export * as monaco from 'monaco-editor'

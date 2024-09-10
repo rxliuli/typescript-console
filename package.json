@@ -16,6 +16,10 @@
   },
   "devDependencies": {
     "@tsconfig/svelte": "^5.0.4",
+    "@types/babel__core": "^7.20.5",
+    "@types/babel__generator": "^7.6.8",
+    "@types/babel__standalone": "^7.1.7",
+    "@types/babel__traverse": "^7.20.6",
     "@types/lodash-es": "^4.17.12",
     "@wxt-dev/module-svelte": "^1.0.0",
     "autoprefixer": "^10.4.20",
@@ -25,9 +29,16 @@
     "tailwindcss": "^3.4.9",
     "tslib": "^2.6.3",
     "typescript": "^5.5.4",
+    "vitest": "^2.0.5",
     "wxt": "^0.19.1"
   },
   "dependencies": {
+    "@babel/core": "^7.25.2",
+    "@babel/generator": "^7.25.6",
+    "@babel/parser": "^7.25.6",
+    "@babel/standalone": "^7.25.6",
+    "@babel/traverse": "^7.25.6",
+    "@babel/types": "^7.25.6",
     "@swc/wasm-web": "^1.7.23",
     "bits-ui": "^0.21.13",
     "clsx": "^2.1.1",

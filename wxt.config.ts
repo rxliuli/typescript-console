@@ -14,6 +14,7 @@ export default defineConfig({
       extension_pages:
         "script-src 'self' 'wasm-unsafe-eval'; object-src 'self';",
     },
+    permissions: ['scripting'],
   },
   vite: () => ({
     resolve: {

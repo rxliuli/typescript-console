@@ -6,6 +6,7 @@
   import { Toaster } from '$lib/components/ui/sonner'
   import { toast } from 'svelte-sonner'
   import { serializeError } from 'serialize-error'
+  import { transformImports } from './utils/transformImports'
 
   let editor: Monaco.editor.IStandaloneCodeEditor
   let monaco: typeof Monaco
@@ -23,7 +24,9 @@
   function loadEditorContent(): string {
     return (
       localStorage.getItem(STORAGE_KEY) ||
-      "console.log('Hello from Monaco! (the editor, not the city...)')"
+      "console.log('Hello from Monaco!') // Cmd/Ctrl+S to execute\n" +
+        '// Add breakpoint in the line above to debug\n' +
+        '// debugger'
     )
   }
 
@@ -44,6 +47,9 @@
         }
       }
       isInit = true
+    }
+    if (code.includes('import')) {
+      code = transformImports(code)
     }
     const result = await transform(code, {
       loader: 'ts',
@@ -92,7 +98,20 @@
   }
 
   onMount(async () => {
-    const monaco = (await import('./monaco')).default
+    const monaco = (await import('./monaco')).monaco
+    const typescriptDefaults = monaco.languages.typescript.typescriptDefaults
+    typescriptDefaults.setCompilerOptions({
+      target: monaco.languages.typescript.ScriptTarget.ESNext,
+      allowNonTsExtensions: true,
+      moduleResolution: monaco.languages.typescript.ModuleResolutionKind.NodeJs,
+      module: monaco.languages.typescript.ModuleKind.ESNext,
+      noEmit: true,
+      typeRoots: ['node_modules/@types'],
+      jsx: monaco.languages.typescript.JsxEmit.React,
+      allowJs: true,
+      strict: true,
+      esModuleInterop: true,
+    })
 
     const initialTheme = detectTheme()
     editor = monaco.editor.create(editorContainer, {
