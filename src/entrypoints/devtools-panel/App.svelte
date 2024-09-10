@@ -6,7 +6,6 @@
   import { Toaster } from '$lib/components/ui/sonner'
   import { toast } from 'svelte-sonner'
   import { serializeError } from 'serialize-error'
-  import { once } from 'lodash-es'
 
   let editor: Monaco.editor.IStandaloneCodeEditor
   let monaco: typeof Monaco
@@ -28,12 +27,24 @@
     )
   }
 
-  const onceInit = once(async () => {
-    await initialize({ wasmURL: wasmUrl })
-  })
+  let isInit = false
 
   async function compileCode(code: string) {
-    await onceInit()
+    if (!isInit) {
+      try {
+        await initialize({
+          wasmURL: wasmUrl,
+        })
+      } catch (error) {
+        if (
+          serializeError(error).message !==
+          'Cannot call "initialize" more than once'
+        ) {
+          throw error
+        }
+      }
+      isInit = true
+    }
     const result = await transform(code, {
       loader: 'ts',
       sourcemap: 'inline',
@@ -63,7 +74,10 @@
 
   async function injectAndExecuteCode(code: string) {
     // 使用 Chrome DevTools 协议注入并执行代码
-    await browser.devtools.inspectedWindow.eval(code)
+    const [, isException] = await browser.devtools.inspectedWindow.eval(code)
+    if (isException && isException.isException) {
+      throw new Error(isException.value)
+    }
   }
 
   function detectTheme(): 'vs' | 'vs-dark' {
