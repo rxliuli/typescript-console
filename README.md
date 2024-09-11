@@ -4,12 +4,14 @@
 
 Run and debug TypeScript code in the Chrome DevTools.
 
-✨Key features:
+## Features
 
 - Write and run TypeScript directly in DevTools
 - Instant compilation and execution
 - Supports latest TypeScript features
 - Easy to use: just Cmd/Ctrl+S to run
+
+## Demo
 
 Normal operation
 ![cover1](./public/cover1.png)

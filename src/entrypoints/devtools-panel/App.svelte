@@ -6,7 +6,11 @@
   import { Toaster } from '$lib/components/ui/sonner'
   import { toast } from 'svelte-sonner'
   import { serializeError } from 'serialize-error'
-  import { transformImports } from './utils/transformImports'
+  import type { transformImports } from './utils/transformImports'
+  import TransformImportsWorker from './utils/transformImports?worker'
+  import type { typeAcquisition } from './initTypeAcquisition'
+  import TypeAcquisitionWorker from './initTypeAcquisition?worker'
+  import { wrap, proxy } from 'comlink'
 
   let editor: Monaco.editor.IStandaloneCodeEditor
   let monaco: typeof Monaco
@@ -49,7 +53,9 @@
       isInit = true
     }
     if (code.includes('import')) {
-      code = transformImports(code)
+      const worker = new TransformImportsWorker()
+      const f = wrap<typeof transformImports>(worker)
+      code = await f(code)
     }
     const result = await transform(code, {
       loader: 'ts',
@@ -99,27 +105,48 @@
 
   onMount(async () => {
     const monaco = (await import('./monaco')).monaco
-    const typescriptDefaults = monaco.languages.typescript.typescriptDefaults
-    typescriptDefaults.setCompilerOptions({
+    const defaults = monaco.languages.typescript.typescriptDefaults
+    defaults.setCompilerOptions({
       target: monaco.languages.typescript.ScriptTarget.ESNext,
       allowNonTsExtensions: true,
       moduleResolution: monaco.languages.typescript.ModuleResolutionKind.NodeJs,
       module: monaco.languages.typescript.ModuleKind.ESNext,
       noEmit: true,
-      typeRoots: ['node_modules/@types'],
-      jsx: monaco.languages.typescript.JsxEmit.React,
-      allowJs: true,
       strict: true,
       esModuleInterop: true,
     })
 
     const initialTheme = detectTheme()
     editor = monaco.editor.create(editorContainer, {
-      value: loadEditorContent(),
       language: 'typescript',
       theme: initialTheme,
     })
+    const model = monaco.editor.createModel(
+      loadEditorContent(),
+      'typescript',
+      monaco.Uri.file('example.ts'),
+    )
+    editor.setModel(model)
 
+    const worker = new TypeAcquisitionWorker()
+    const ta = wrap<typeof typeAcquisition>(worker)
+    await ta.init(proxy(addLibraryToRuntime))
+
+    // 添加内容变化监听器
+    editor.onDidChangeModelContent(async () => {
+      saveEditorContent()
+      // 判断是否有错误
+      const value = editor.getValue()
+      await ta.dl(value)
+    })
+    // editor 初始化完成后，执行一次 ta
+    ta.dl(editor.getValue())
+
+    function addLibraryToRuntime(code: string, _path: string) {
+      const path = 'file://' + _path
+      defaults.addExtraLib(code, path)
+      console.log(`[ATA] Adding ${path} to runtime`, { code })
+    }
     // 添加键盘事件监听器
     window.addEventListener('keydown', handleKeyDown)
 
@@ -127,11 +154,6 @@
     window
       .matchMedia('(prefers-color-scheme: dark)')
       .addEventListener('change', updateEditorTheme)
-
-    // 添加内容变化监听器
-    editor.onDidChangeModelContent(() => {
-      saveEditorContent()
-    })
   })
 
   onDestroy(() => {

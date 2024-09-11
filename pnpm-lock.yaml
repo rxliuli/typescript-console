@@ -8,33 +8,21 @@ importers:
 
   .:
     dependencies:
-      '@babel/core':
-        specifier: ^7.25.2
-        version: 7.25.2
-      '@babel/generator':
-        specifier: ^7.25.6
-        version: 7.25.6
-      '@babel/parser':
-        specifier: ^7.25.6
-        version: 7.25.6
       '@babel/standalone':
         specifier: ^7.25.6
         version: 7.25.6
-      '@babel/traverse':
-        specifier: ^7.25.6
-        version: 7.25.6
-      '@babel/types':
-        specifier: ^7.25.6
-        version: 7.25.6
-      '@swc/wasm-web':
-        specifier: ^1.7.23
-        version: 1.7.23
+      '@typescript/ata':
+        specifier: ^0.9.7
+        version: 0.9.7(typescript@5.5.4)
       bits-ui:
         specifier: ^0.21.13
         version: 0.21.13(svelte@4.2.19)
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
+      comlink:
+        specifier: ^4.4.1
+        version: 4.4.1
       esbuild-wasm:
         specifier: ^0.23.1
         version: 0.23.1
@@ -57,6 +45,9 @@ importers:
         specifier: ^0.2.1
         version: 0.2.1(tailwindcss@3.4.10)
     devDependencies:
+      '@babel/types':
+        specifier: ^7.25.6
+        version: 7.25.6
       '@tsconfig/svelte':
         specifier: ^5.0.4
         version: 5.0.4
@@ -685,9 +676,6 @@ packages:
   '@swc/helpers@0.5.13':
     resolution: {integrity: sha512-UoKGxQ3r5kYI9dALKJapMmuK+1zWM/H17Z1+iwnNmzcJRnfFuevZs375TA5rW31pu4BS4NoSy1fRsexDXfWn5w==}
 
-  '@swc/wasm-web@1.7.23':
-    resolution: {integrity: sha512-YKCgvSdC4REE+4f8IqUFnWsC/lcw9dTmGPiTdKyPiWf4eTmfTdFHRXMf27HDif1JRyRx1fCd4jHFPraVQIzzIw==}
-
   '@szmarczak/http-timer@5.0.1':
     resolution: {integrity: sha512-+PmQX0PiAYPMeVYe237LJAYvOMYW1j2rH5YROyS3b4CTVJum34HfRvKvAzozHAQG0TnHNdUfY9nCeUyRAs//cw==}
     engines: {node: '>=14.16'}
@@ -748,6 +736,11 @@ packages:
 
   '@types/yauzl@2.10.3':
     resolution: {integrity: sha512-oJoftv0LSuaDZE3Le4DbKX+KS9G36NzOeSap90UIK0yMA/NhKJhqlSGtNDORNRaIbQfzjXDrQa0ytJ6mNRGz/Q==}
+
+  '@typescript/ata@0.9.7':
+    resolution: {integrity: sha512-CZx57/XGBKhYZ3ifchbERgUl9J6C7W3XC96ibM7axr7C32mG5dXTyrVAS3ZY88Jxlkvx4AZyZtDJyUuseHQkcQ==}
+    peerDependencies:
+      typescript: '>=4.4.4'
 
   '@vitest/expect@2.0.5':
     resolution: {integrity: sha512-yHZtwuP7JZivj65Gxoi8upUN2OzHTi3zVfjwdpu2WrvCZPLwsJ2Ey5ILIPccoW23dd/zQBlJ4/dhi7DWNyXCpA==}
@@ -1073,6 +1066,9 @@ packages:
 
   colorette@2.0.20:
     resolution: {integrity: sha512-IfEDxwoWIjkeXL1eXcDiow4UbKjhLdq6/EuSVR9GMN7KVH3r9gQ83e73hsz1Nd1T3ijd5xv1wcWRYO+D6kCI2w==}
+
+  comlink@4.4.1:
+    resolution: {integrity: sha512-+1dlx0aY5Jo1vHy/tSsIGpSkN4tS9rZSW8FIhG0JH/crs9wwweswIo/POr451r7bZww3hFbPAKnTpimzL/mm4Q==}
 
   commander@2.9.0:
     resolution: {integrity: sha512-bmkUukX8wAOjHdN26xj5c4ctEV22TQ7dQYhSmuckKhToXrkUn0iIaolHdIxYYqD55nhpSPA9zPQ1yP57GdXP2A==}
@@ -2975,7 +2971,8 @@ snapshots:
       '@babel/highlight': 7.24.7
       picocolors: 1.1.0
 
-  '@babel/compat-data@7.25.4': {}
+  '@babel/compat-data@7.25.4':
+    optional: true
 
   '@babel/core@7.25.2':
     dependencies:
@@ -2996,6 +2993,7 @@ snapshots:
       semver: 6.3.1
     transitivePeerDependencies:
       - supports-color
+    optional: true
 
   '@babel/generator@7.25.6':
     dependencies:
@@ -3003,6 +3001,7 @@ snapshots:
       '@jridgewell/gen-mapping': 0.3.5
       '@jridgewell/trace-mapping': 0.3.25
       jsesc: 2.5.2
+    optional: true
 
   '@babel/helper-compilation-targets@7.25.2':
     dependencies:
@@ -3011,6 +3010,7 @@ snapshots:
       browserslist: 4.23.3
       lru-cache: 5.1.1
       semver: 6.3.1
+    optional: true
 
   '@babel/helper-module-imports@7.24.7':
     dependencies:
@@ -3018,6 +3018,7 @@ snapshots:
       '@babel/types': 7.25.6
     transitivePeerDependencies:
       - supports-color
+    optional: true
 
   '@babel/helper-module-transforms@7.25.2(@babel/core@7.25.2)':
     dependencies:
@@ -3028,6 +3029,7 @@ snapshots:
       '@babel/traverse': 7.25.6
     transitivePeerDependencies:
       - supports-color
+    optional: true
 
   '@babel/helper-simple-access@7.24.7':
     dependencies:
@@ -3035,17 +3037,20 @@ snapshots:
       '@babel/types': 7.25.6
     transitivePeerDependencies:
       - supports-color
+    optional: true
 
   '@babel/helper-string-parser@7.24.8': {}
 
   '@babel/helper-validator-identifier@7.24.7': {}
 
-  '@babel/helper-validator-option@7.24.8': {}
+  '@babel/helper-validator-option@7.24.8':
+    optional: true
 
   '@babel/helpers@7.25.6':
     dependencies:
       '@babel/template': 7.25.0
       '@babel/types': 7.25.6
+    optional: true
 
   '@babel/highlight@7.24.7':
     dependencies:
@@ -3069,6 +3074,7 @@ snapshots:
       '@babel/code-frame': 7.24.7
       '@babel/parser': 7.25.6
       '@babel/types': 7.25.6
+    optional: true
 
   '@babel/traverse@7.25.6':
     dependencies:
@@ -3081,6 +3087,7 @@ snapshots:
       globals: 11.12.0
     transitivePeerDependencies:
       - supports-color
+    optional: true
 
   '@babel/types@7.25.6':
     dependencies:
@@ -3412,8 +3419,6 @@ snapshots:
     dependencies:
       tslib: 2.7.0
 
-  '@swc/wasm-web@1.7.23': {}
-
   '@szmarczak/http-timer@5.0.1':
     dependencies:
       defer-to-connect: 2.0.1
@@ -3482,6 +3487,10 @@ snapshots:
     dependencies:
       '@types/node': 22.5.4
     optional: true
+
+  '@typescript/ata@0.9.7(typescript@5.5.4)':
+    dependencies:
+      typescript: 5.5.4
 
   '@vitest/expect@2.0.5':
     dependencies:
@@ -3841,6 +3850,8 @@ snapshots:
 
   colorette@2.0.20: {}
 
+  comlink@4.4.1: {}
+
   commander@2.9.0:
     dependencies:
       graceful-readlink: 1.0.1
@@ -3875,7 +3886,8 @@ snapshots:
 
   consola@3.2.3: {}
 
-  convert-source-map@2.0.0: {}
+  convert-source-map@2.0.0:
+    optional: true
 
   core-util-is@1.0.3: {}
 
@@ -4240,7 +4252,8 @@ snapshots:
       which: 1.2.4
       winreg: 0.0.12
 
-  gensync@1.0.0-beta.2: {}
+  gensync@1.0.0-beta.2:
+    optional: true
 
   get-caller-file@2.0.5: {}
 
@@ -4315,7 +4328,8 @@ snapshots:
     dependencies:
       ini: 2.0.0
 
-  globals@11.12.0: {}
+  globals@11.12.0:
+    optional: true
 
   got@12.6.1:
     dependencies:
@@ -4509,7 +4523,8 @@ snapshots:
 
   js-tokens@9.0.0: {}
 
-  jsesc@2.5.2: {}
+  jsesc@2.5.2:
+    optional: true
 
   json-buffer@3.0.1: {}
 
@@ -4624,6 +4639,7 @@ snapshots:
   lru-cache@5.1.1:
     dependencies:
       yallist: 3.1.1
+    optional: true
 
   magic-string@0.30.11:
     dependencies:
@@ -5167,7 +5183,8 @@ snapshots:
     dependencies:
       semver: 7.6.3
 
-  semver@6.3.1: {}
+  semver@6.3.1:
+    optional: true
 
   semver@7.6.3: {}
 
@@ -5769,7 +5786,8 @@ snapshots:
 
   y18n@5.0.8: {}
 
-  yallist@3.1.1: {}
+  yallist@3.1.1:
+    optional: true
 
   yallist@4.0.0: {}
 

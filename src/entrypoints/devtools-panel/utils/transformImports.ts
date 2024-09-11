@@ -1,6 +1,7 @@
 import { packages } from '@babel/standalone'
 import { groupBy } from 'lodash-es'
 import type { ImportDeclaration, Statement } from '@babel/types'
+import { expose } from 'comlink'
 
 export function transformImports(code: string) {
   const { parser, types, generator } = packages
@@ -85,3 +86,5 @@ export function transformImports(code: string) {
 
   return result.code + '\n' + inlineSourceMap
 }
+
+expose(transformImports)
