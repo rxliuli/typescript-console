@@ -1,6 +1,7 @@
 import { setupTypeAcquisition } from '@typescript/ata'
 import * as ts from 'typescript'
 import { expose } from 'comlink'
+import { isWebWorker } from './utils/isWebWorker'
 
 let ta: ReturnType<typeof setupTypeAcquisition>
 
@@ -39,4 +40,6 @@ export const typeAcquisition = {
   },
 }
 
-expose(typeAcquisition)
+if (isWebWorker()) {
+  expose(typeAcquisition)
+}

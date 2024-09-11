@@ -28,7 +28,8 @@
   function loadEditorContent(): string {
     return (
       localStorage.getItem(STORAGE_KEY) ||
-      "console.log('Hello from Monaco!') // Cmd/Ctrl+S to execute\n" +
+      '// Cmd/Ctrl+S to execute\n' +
+        "console.log('Hello from Monaco!')\n" +
         '// Add breakpoint in the line above to debug\n' +
         '// debugger'
     )
@@ -60,6 +61,7 @@
     const result = await transform(code, {
       loader: 'ts',
       sourcemap: 'inline',
+      format: 'iife',
     })
     return result.code
   }
@@ -70,6 +72,7 @@
       const code = editor.getValue()
       try {
         const buildCode = await compileCode(code)
+        console.log('buildCode', buildCode)
         await injectAndExecuteCode(buildCode)
         toast.success('Code executed successfully')
       } catch (error) {
@@ -101,6 +104,10 @@
   function updateEditorTheme() {
     const theme = detectTheme()
     monaco.editor.setTheme(theme)
+  }
+
+  function handleResize() {
+    editor.layout()
   }
 
   onMount(async () => {
@@ -154,6 +161,9 @@
     window
       .matchMedia('(prefers-color-scheme: dark)')
       .addEventListener('change', updateEditorTheme)
+
+    // 添加窗口尺寸变化监听器
+    window.addEventListener('resize', handleResize)
   })
 
   onDestroy(() => {
@@ -166,6 +176,8 @@
     window
       .matchMedia('(prefers-color-scheme: dark)')
       .removeEventListener('change', updateEditorTheme)
+
+    window.removeEventListener('resize', handleResize)
 
     // 保存编辑器内容
     saveEditorContent()

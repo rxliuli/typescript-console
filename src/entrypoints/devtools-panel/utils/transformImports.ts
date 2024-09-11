@@ -1,7 +1,31 @@
 import { packages } from '@babel/standalone'
-import { groupBy } from 'lodash-es'
-import type { ImportDeclaration, Statement } from '@babel/types'
+import { groupBy, spread } from 'lodash-es'
+import type {
+  ImportDeclaration,
+  Statement,
+  ImportSpecifier,
+  Identifier,
+} from '@babel/types'
 import { expose } from 'comlink'
+import defineCode from './define?raw'
+import { isWebWorker } from './isWebWorker'
+
+type ImportType = {
+  source: string
+} & (
+  | {
+      type: 'namespace'
+      name: string
+    }
+  | {
+      type: 'default'
+      name: string
+    }
+  | {
+      type: 'named'
+      imports: Record<string, string>
+    }
+)
 
 export function transformImports(code: string) {
   const { parser, types, generator } = packages
@@ -9,6 +33,11 @@ export function transformImports(code: string) {
     sourceType: 'module',
     plugins: ['typescript'],
     sourceFilename: 'example.ts',
+  })
+
+  const defineAst = parser.parse(defineCode, {
+    sourceType: 'module',
+    plugins: ['typescript'],
   })
 
   const grouped = groupBy(ast.program.body, (it) =>
@@ -21,51 +50,69 @@ export function transformImports(code: string) {
   }
 
   const t = types
-  const dynamicImports = imports.map((imp) => {
-    return t.awaitExpression(
-      t.callExpression(t.import(), [
-        t.stringLiteral(
-          imp.source.value.startsWith('https://')
-            ? imp.source.value
-            : `https://esm.sh/${imp.source.value}`,
-        ),
-      ]),
-    )
-  })
 
-  const params = imports.map((imp) =>
-    t.objectPattern(
-      imp.specifiers.map((spec) =>
-        t.objectProperty(
-          t.identifier(spec.local.name),
-          t.identifier(spec.local.name),
-          false,
-          true,
-        ),
-      ),
-    ),
+  const parsedImports = imports.flatMap((imp): ImportType[] => {
+    // 解析 import 为不同类型，例如 import * as _ from 'lodash-es' 和 import React from 'react'
+    // 然后分别处理
+    const specifiers = imp.specifiers
+    const source = imp.source.value
+    const isNamespace =
+      specifiers.length === 1 && t.isImportNamespaceSpecifier(specifiers[0])
+    const includeDefault = specifiers.some((it) =>
+      t.isImportDefaultSpecifier(it),
+    )
+    if (isNamespace) {
+      return [
+        {
+          type: 'namespace',
+          source,
+          name: specifiers[0].local.name,
+        },
+      ]
+    }
+    const namedImport = specifiers.filter(
+      (it) => !t.isImportDefaultSpecifier(it),
+    )
+    const result: ImportType[] = []
+    if (namedImport.length > 0) {
+      result.push({
+        type: 'named',
+        source,
+        imports: namedImport.reduce((acc, it) => {
+          acc[((it as ImportSpecifier).imported as Identifier).name] =
+            it.local.name
+          return acc
+        }, {} as Record<string, string>),
+      } as ImportType)
+    }
+    if (includeDefault) {
+      result.push({
+        type: 'default',
+        source,
+        name: specifiers[0].local.name,
+      } as ImportType)
+    }
+    return result
+  })
+  const params = parsedImports.map((imp) =>
+    imp.type === 'named'
+      ? t.objectPattern(
+          Object.entries(imp.imports).map((spec) =>
+            t.objectProperty(t.identifier(spec[0]), t.identifier(spec[1])),
+          ),
+        )
+      : t.identifier(imp.name),
   )
 
   const newAst = t.program([
+    defineAst.program.body[0],
     t.expressionStatement(
-      t.callExpression(
-        t.arrowFunctionExpression(
-          [],
-          t.blockStatement([
-            t.expressionStatement(
-              t.callExpression(
-                t.arrowFunctionExpression(
-                  params,
-                  t.blockStatement(nonImportBody),
-                ),
-                dynamicImports,
-              ),
-            ),
-          ]),
-          true,
+      t.callExpression(t.identifier('define'), [
+        t.arrayExpression(
+          parsedImports.map((it) => t.stringLiteral(it.source)),
         ),
-        [],
-      ),
+        t.arrowFunctionExpression(params, t.blockStatement(nonImportBody)),
+      ]),
     ),
   ])
 
@@ -87,4 +134,6 @@ export function transformImports(code: string) {
   return result.code + '\n' + inlineSourceMap
 }
 
-expose(transformImports)
+if (isWebWorker()) {
+  expose(transformImports)
+}

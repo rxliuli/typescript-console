@@ -15,12 +15,12 @@
     "postinstall": "wxt prepare"
   },
   "devDependencies": {
+    "@babel/types": "^7.25.6",
     "@tsconfig/svelte": "^5.0.4",
     "@types/babel__core": "^7.20.5",
     "@types/babel__generator": "^7.6.8",
     "@types/babel__standalone": "^7.1.7",
     "@types/babel__traverse": "^7.20.6",
-    "@babel/types": "^7.25.6",
     "@types/lodash-es": "^4.17.12",
     "@wxt-dev/module-svelte": "^1.0.0",
     "autoprefixer": "^10.4.20",
@@ -41,6 +41,7 @@
     "comlink": "^4.4.1",
     "esbuild-wasm": "^0.23.1",
     "lodash-es": "^4.17.21",
+    "magic-string": "^0.30.11",
     "mode-watcher": "^0.4.1",
     "serialize-error": "^11.0.3",
     "svelte-sonner": "^0.3.27",

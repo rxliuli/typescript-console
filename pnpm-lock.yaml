@@ -29,6 +29,9 @@ importers:
       lodash-es:
         specifier: ^4.17.21
         version: 4.17.21
+      magic-string:
+        specifier: ^0.30.11
+        version: 0.30.11
       mode-watcher:
         specifier: ^0.4.1
         version: 0.4.1(svelte@4.2.19)

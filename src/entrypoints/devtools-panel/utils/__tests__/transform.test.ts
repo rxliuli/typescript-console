@@ -1,6 +1,5 @@
 import { transformImports } from '../transformImports'
-import { describe, expect, it } from 'vitest'
-import { packages } from '@babel/standalone'
+import { expect, it } from 'vitest'
 
 it('transform import', () => {
   const code = `
@@ -9,12 +8,9 @@ import { h, render } from 'preact'
 const app = h('h1', null, 'Hello World!')
 render(app, document.body)
 `
-
   const transformed = transformImports(code)
-
-  expect(transformed).include('await import("https://esm.sh/preact"));')
+  expect(transformed).include('define(["preact"]')
 })
-
 it('multiple imports', () => {
   const code = `
 import { h, render } from 'preact'
@@ -24,13 +20,9 @@ const app = h('h1', null, 'Hello World!')
 render(app, document.body)
 console.log(1)
 `
-
   const transformed = transformImports(code)
-
-  expect(transformed).include('await import("https://esm.sh/preact")')
-  expect(transformed).include('await import("https://esm.sh/preact/hooks")')
+  expect(transformed).include('define(["preact", "preact/hooks"]')
 })
-
 it('include sourcemap', () => {
   const code = `
 import { h, render } from 'preact'
@@ -43,16 +35,23 @@ render(app, document.body)
 
   expect(transformed).include('# sourceMappingURL=data:application/json;base64')
 })
-
-it("don't transform http import", () => {
+it('default import', async () => {
   const code = `
-import { h, render } from 'https://cdn.jsdelivr.net/npm/preact@10.23.2/+esm'
+import htm from 'htm'
+console.log(htm)
+  `
+  const transformed = transformImports(code)
+  expect(transformed).include('define(["htm"]')
+})
+it('mixed import', async () => {
+  const code = `
+import _, { add as add1 } from 'lodash-es'
+import add2 from 'lodash-es/add'
 
-const app = h('h1', null, 'Hello World!')
-render(app, document.body)
+console.log(_.add(1, 2), add1(1, 2), add2(1, 2))
 `
   const transformed = transformImports(code)
-
-  expect(transformed).not.include('https://esm.sh')
+  expect(transformed).include(
+    'define(["lodash-es", "lodash-es", "lodash-es/add"]',
+  )
 })
-
