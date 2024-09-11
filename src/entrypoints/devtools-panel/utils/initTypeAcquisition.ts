@@ -1,7 +1,7 @@
 import { setupTypeAcquisition } from '@typescript/ata'
 import * as ts from 'typescript'
 import { expose } from 'comlink'
-import { isWebWorker } from './utils/isWebWorker'
+import { isWebWorker } from './isWebWorker'
 
 let ta: ReturnType<typeof setupTypeAcquisition>
 

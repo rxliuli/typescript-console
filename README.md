@@ -13,6 +13,7 @@ Run and debug TypeScript code in the Chrome DevTools.
 - [ ] Support setting tsconfig.json
 - [ ] Support adding breakpoints directly
 - [ ] Support Snippet functionality
+- [ ] AI assistant
 
 ## Demo
 
