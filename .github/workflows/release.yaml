@@ -1,6 +1,6 @@
 env:
   DIRECTORY: .output
-  PROJECT_NAME: google-search-console-bulk-index-cleaner
+  PROJECT_NAME: typescript-console
 
 name: Release
 
@@ -58,16 +58,6 @@ jobs:
       - name: Zip extensions
         run: |
           pnpm run zip
-
-      - name: Submit to stores
-        run: |
-          pnpm wxt submit \
-            --chrome-zip .output/*-chrome.zip
-        env:
-          CHROME_EXTENSION_ID: ${{ secrets.CHROME_EXTENSION_ID }}
-          CHROME_CLIENT_ID: ${{ secrets.CHROME_CLIENT_ID }}
-          CHROME_CLIENT_SECRET: ${{ secrets.CHROME_CLIENT_SECRET }}
-          CHROME_REFRESH_TOKEN: ${{ secrets.CHROME_REFRESH_TOKEN }}
 
       - name: Create Release
         uses: softprops/action-gh-release@v2
