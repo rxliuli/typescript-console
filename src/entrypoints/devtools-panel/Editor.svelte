@@ -73,21 +73,6 @@
     return result.code
   }
 
-  onMount(async () => {
-    const r = await compileCode(`
-import { render } from 'preact'
-import { useSignal } from '@preact/signals'
-
-function App() {
-    const time = useSignal(new Date())
-    return <div>Time: {time}</div>
-}
-
-render(<App />, document.body)
-    `)
-    console.log('r', r)
-  })
-
   async function execute() {
     const code = editor.getValue()
     try {
