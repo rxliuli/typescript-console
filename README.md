@@ -9,11 +9,14 @@ Run and debug TypeScript code in the Chrome DevTools.
 - [x] Write and run TypeScript directly in DevTools
 - [x] Supports latest TypeScript features
 - [x] Easy to use: just Cmd/Ctrl+S to run
-- [x] Support importing npm packages
-- [ ] Support setting tsconfig.json
-- [ ] Support adding breakpoints directly
-- [ ] Support Snippet functionality
+- [x] Importing npm packages
+- [ ] Custom tsconfig.json
+- [ ] Adding breakpoints directly
+- [ ] Snippet functionality
 - [ ] AI assistant
+- [ ] VIM Mode
+- [x] TSX support
+- [x] ~~Custom keybinding~~
 
 ## Demo
 

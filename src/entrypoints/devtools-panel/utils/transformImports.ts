@@ -1,5 +1,5 @@
 import { packages } from '@babel/standalone'
-import { groupBy, spread } from 'lodash-es'
+import { groupBy } from 'lodash-es'
 import type {
   ImportDeclaration,
   Statement,
@@ -27,17 +27,29 @@ type ImportType = {
     }
 )
 
-export function transformImports(code: string) {
+function getJsxType(importSources: string[]): 'react' | 'preact' | undefined {
+  if (
+    importSources.includes('react') ||
+    importSources.includes('react/client')
+  ) {
+    return 'react'
+  }
+  if (importSources.includes('preact')) {
+    return 'preact'
+  }
+}
+
+export function transformImports(code: string): string {
   const { parser, types, generator } = packages
   const ast = parser.parse(code, {
     sourceType: 'module',
-    plugins: ['typescript'],
-    sourceFilename: 'example.ts',
+    plugins: ['typescript', 'jsx'],
+    sourceFilename: 'example.tsx',
   })
 
   const defineAst = parser.parse(defineCode, {
     sourceType: 'module',
-    plugins: ['typescript'],
+    plugins: ['typescript', 'jsx'],
   })
 
   const grouped = groupBy(ast.program.body, (it) =>
@@ -94,6 +106,24 @@ export function transformImports(code: string) {
     }
     return result
   })
+  const jsx = getJsxType(parsedImports.map((it) => it.source))
+  if (jsx === 'react') {
+    parsedImports.push({
+      type: 'named',
+      source: 'react',
+      imports: {
+        createElement: 'h',
+      },
+    })
+  } else if (jsx === 'preact') {
+    parsedImports.push({
+      type: 'named',
+      source: 'preact',
+      imports: {
+        h: 'h',
+      },
+    })
+  }
   const params = parsedImports.map((imp) =>
     imp.type === 'named'
       ? t.objectPattern(
@@ -109,7 +139,16 @@ export function transformImports(code: string) {
     t.expressionStatement(
       t.callExpression(t.identifier('define'), [
         t.arrayExpression(
-          parsedImports.map((it) => t.stringLiteral(it.source)),
+          parsedImports.map((it) => {
+            if (jsx === 'preact') {
+              if (it.source !== 'preact') {
+                return t.stringLiteral(
+                  `${it.source}?alias=react:preact/compat&deps=preact@latest`,
+                )
+              }
+            }
+            return t.stringLiteral(it.source)
+          }),
         ),
         t.arrowFunctionExpression(params, t.blockStatement(nonImportBody)),
       ]),

@@ -63,12 +63,30 @@
       code = await f(code)
     }
     const result = await transform(code, {
-      loader: 'ts',
+      loader: 'tsx',
       sourcemap: 'inline',
       format: 'iife',
+      jsx: 'transform',
+      jsxFactory: 'h',
+      jsxFragment: 'Fragment',
     })
     return result.code
   }
+
+  onMount(async () => {
+    const r = await compileCode(`
+import { render } from 'preact'
+import { useSignal } from '@preact/signals'
+
+function App() {
+    const time = useSignal(new Date())
+    return <div>Time: {time}</div>
+}
+
+render(<App />, document.body)
+    `)
+    console.log('r', r)
+  })
 
   async function execute() {
     const code = editor.getValue()
@@ -129,6 +147,7 @@
       allowNonTsExtensions: true,
       moduleResolution: monaco.languages.typescript.ModuleResolutionKind.NodeJs,
       module: monaco.languages.typescript.ModuleKind.ESNext,
+      jsx: monaco.languages.typescript.JsxEmit.Preserve,
       noEmit: true,
       strict: true,
       esModuleInterop: true,
@@ -143,7 +162,7 @@
     const model = monaco.editor.createModel(
       loadEditorContent(),
       'typescript',
-      monaco.Uri.file('example.ts'),
+      monaco.Uri.file('example.tsx'),
     )
     editor.setModel(model)
 
