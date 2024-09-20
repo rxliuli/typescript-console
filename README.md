@@ -18,6 +18,16 @@ Run and debug TypeScript code in the Chrome DevTools.
 - [x] TSX support
 - [x] ~~Custom keybinding~~
 
+## Usage
+
+1. Install the extension from the [Chrome Web Store](https://chromewebstore.google.com/detail/jkanoakidjoklcefakbdnnhgdenddppg).
+2. Open Chrome DevTools.
+3. Open the "TypeScript Console" panel.
+   ![demo1](./public/demo1.png)
+4. Write and run TypeScript code.
+   ![demo2](./public/demo2.png)
+5. Click the "Run" button or press `Cmd/Ctrl+S` to execute the code.
+
 ## Demo
 
 Normal operation
