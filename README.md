@@ -24,9 +24,11 @@ Run and debug TypeScript code in the Chrome DevTools.
 2. Open Chrome DevTools.
 3. Open the "TypeScript Console" panel.
    ![demo1](./public/demo1.png)
-4. Write and run TypeScript code.
+4. Show conosle drawer
    ![demo2](./public/demo2.png)
-5. Click the "Run" button or press `Cmd/Ctrl+S` to execute the code.
+5. Write and run TypeScript code.
+   ![demo3](./public/demo3.png)
+6. Click the "Run" button or press `Cmd/Ctrl+S` to execute the code.
 
 ## Demo
 
