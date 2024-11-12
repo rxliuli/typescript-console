@@ -15,11 +15,11 @@
     "postinstall": "wxt prepare"
   },
   "devDependencies": {
-    "@babel/types": "^7.25.6",
+    "@babel/types": "^7.26.0",
     "@tsconfig/svelte": "^5.0.4",
     "@types/babel__core": "^7.20.5",
     "@types/babel__generator": "^7.6.8",
-    "@types/babel__standalone": "^7.1.7",
+    "@types/babel__standalone": "^7.1.9",
     "@types/babel__traverse": "^7.20.6",
     "@types/lodash-es": "^4.17.12",
     "@wxt-dev/module-svelte": "^1.0.0",
