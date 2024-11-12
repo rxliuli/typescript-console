@@ -20,11 +20,13 @@ Run and debug TypeScript code in the Chrome DevTools.
 
 ## Usage
 
+> [Demo video](https://www.youtube.com/watch?v=TkHridClbyM)
+
 1. Install the extension from the [Chrome Web Store](https://chromewebstore.google.com/detail/jkanoakidjoklcefakbdnnhgdenddppg).
 2. Open Chrome DevTools.
 3. Open the "TypeScript Console" panel.
    ![demo1](./public/demo1.png)
-4. Show conosle drawer
+4. Show console drawer
    ![demo2](./public/demo2.png)
 5. Write and run TypeScript code.
    ![demo3](./public/demo3.png)
