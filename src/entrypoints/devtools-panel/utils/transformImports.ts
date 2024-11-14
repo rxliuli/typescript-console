@@ -9,6 +9,7 @@ import type {
 import { expose } from 'comlink'
 import defineCode from './define?raw'
 import { isWebWorker } from './isWebWorker'
+import * as convert from 'convert-source-map'
 
 type ImportType = {
   source: string
@@ -162,14 +163,12 @@ export function transformImports(code: string): string {
     {
       retainLines: true,
       sourceMaps: true,
-      sourceFileName: 'example.ts',
+      sourceFileName: 'example.tsx',
     },
     code,
   )
 
-  const base64Map = btoa(JSON.stringify(result.map))
-  const inlineSourceMap = `//# sourceMappingURL=data:application/json;base64,${base64Map}`
-
+  const inlineSourceMap = convert.fromObject(result.map).toComment()
   return result.code + '\n' + inlineSourceMap
 }
 

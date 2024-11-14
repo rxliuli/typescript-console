@@ -1,4 +1,4 @@
-import { defineConfig, UserManifest } from 'wxt'
+import { defineConfig } from 'wxt'
 import path from 'path'
 
 // See https://wxt.dev/api/config.html
@@ -20,6 +20,10 @@ export default defineConfig({
       alias: {
         $lib: path.resolve('./src/lib'),
       },
+    },
+    build: {
+      minify: false,
+      sourcemap: true,
     },
   }),
 })
