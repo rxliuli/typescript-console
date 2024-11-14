@@ -12,7 +12,8 @@
     "zip": "wxt zip",
     "zip:firefox": "wxt zip -b firefox",
     "check": "svelte-check --tsconfig ./tsconfig.json",
-    "postinstall": "wxt prepare"
+    "postinstall": "wxt prepare",
+    "test": "vitest run"
   },
   "devDependencies": {
     "@babel/types": "^7.26.0",
@@ -49,10 +50,12 @@
     "lucide-svelte": "^0.439.0",
     "magic-string": "^0.30.11",
     "mode-watcher": "^0.4.1",
+    "prettier": "^3.3.3",
     "serialize-error": "^11.0.3",
     "svelte-persisted-store": "^0.11.0",
     "svelte-sonner": "^0.3.27",
     "tailwind-merge": "^2.5.2",
-    "tailwind-variants": "^0.2.1"
+    "tailwind-variants": "^0.2.1",
+    "vfile-location": "^5.0.3"
   }
 }

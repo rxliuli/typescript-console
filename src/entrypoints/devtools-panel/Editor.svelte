@@ -7,14 +7,19 @@
   import { serializeError } from 'serialize-error'
   import type { transformImports } from './utils/transformImports'
   import TransformImportsWorker from './utils/transformImports?worker'
+  import type { transformAsync } from './utils/transformAsync'
+  import TransformAsyncWorker from './utils/transformAsync?worker'
   import type { typeAcquisition } from './utils/initTypeAcquisition'
   import TypeAcquisitionWorker from './utils/initTypeAcquisition?worker'
+  import FormatCodeWorker from './utils/formatCode?worker'
+  import type { formatCode } from './utils/formatCode'
   import { wrap, proxy } from 'comlink'
   import { settings } from './store'
   import { useEventBus } from './utils/useEventBus'
   import { get } from 'svelte/store'
   import { mode } from 'mode-watcher'
   import { watch } from './utils/watch'
+  import { location } from 'vfile-location'
 
   let editor: Monaco.editor.IStandaloneCodeEditor
   let monaco: typeof Monaco
@@ -61,6 +66,10 @@
       const worker = new TransformImportsWorker()
       const f = wrap<typeof transformImports>(worker)
       code = await f(code)
+    } else {
+      const worker = new TransformAsyncWorker()
+      const f = wrap<typeof transformAsync>(worker)
+      code = await f(code)
     }
     const result = await transform(code, {
       loader: 'tsx',
@@ -69,14 +78,15 @@
       jsx: 'transform',
       jsxFactory: 'h',
       jsxFragment: 'Fragment',
+      target: 'esnext',
     })
     return result.code
   }
 
   async function execute() {
-    const code = editor.getValue()
     try {
-      const buildCode = await compileCode(code)
+      await editor.getAction('editor.action.formatDocument')?.run()
+      const buildCode = await compileCode(editor.getValue())
       console.log('buildCode', buildCode)
       await injectAndExecuteCode(buildCode)
       toast.success('Code executed successfully')
@@ -136,6 +146,20 @@
       noEmit: true,
       strict: true,
       esModuleInterop: true,
+    })
+    defaults.setDiagnosticsOptions({ diagnosticCodesToIgnore: [1375] })
+    monaco.languages.registerDocumentFormattingEditProvider('typescript', {
+      provideDocumentFormattingEdits: async (model, _options, token) => {
+        const worker = new FormatCodeWorker()
+        const f = wrap<typeof formatCode>(worker)
+        const formattedCode = await f(model.getValue(), 0)
+        return [
+          {
+            text: formattedCode.formatted,
+            range: model.getFullModelRange(),
+          },
+        ]
+      },
     })
 
     const initialTheme = detectTheme()

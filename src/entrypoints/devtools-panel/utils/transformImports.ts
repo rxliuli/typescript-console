@@ -91,11 +91,14 @@ export function transformImports(code: string): string {
       result.push({
         type: 'named',
         source,
-        imports: namedImport.reduce((acc, it) => {
-          acc[((it as ImportSpecifier).imported as Identifier).name] =
-            it.local.name
-          return acc
-        }, {} as Record<string, string>),
+        imports: namedImport.reduce(
+          (acc, it) => {
+            acc[((it as ImportSpecifier).imported as Identifier).name] =
+              it.local.name
+            return acc
+          },
+          {} as Record<string, string>,
+        ),
       } as ImportType)
     }
     if (includeDefault) {
@@ -109,21 +112,37 @@ export function transformImports(code: string): string {
   })
   const jsx = getJsxType(parsedImports.map((it) => it.source))
   if (jsx === 'react') {
-    parsedImports.push({
-      type: 'named',
-      source: 'react',
-      imports: {
-        createElement: 'h',
-      },
-    })
+    if (
+      !parsedImports.some(
+        (it) =>
+          it.source === 'react' &&
+          it.type === 'named' &&
+          'createElement' in it.imports,
+      )
+    ) {
+      parsedImports.push({
+        type: 'named',
+        source: 'react',
+        imports: {
+          createElement: 'h',
+        },
+      })
+    }
   } else if (jsx === 'preact') {
-    parsedImports.push({
-      type: 'named',
-      source: 'preact',
-      imports: {
-        h: 'h',
-      },
-    })
+    if (
+      !parsedImports.some(
+        (it) =>
+          it.source === 'preact' && it.type === 'named' && 'h' in it.imports,
+      )
+    ) {
+      parsedImports.push({
+        type: 'named',
+        source: 'preact',
+        imports: {
+          h: 'h',
+        },
+      })
+    }
   }
   const params = parsedImports.map((imp) =>
     imp.type === 'named'
@@ -142,7 +161,11 @@ export function transformImports(code: string): string {
         t.arrayExpression(
           parsedImports.map((it) => {
             if (jsx === 'preact') {
-              if (it.source !== 'preact') {
+              if (
+                it.source !== 'preact' &&
+                !it.source.startsWith('preact/') &&
+                !it.source.startsWith('@preact/')
+              ) {
                 return t.stringLiteral(
                   `${it.source}?alias=react:preact/compat&deps=preact@latest`,
                 )
@@ -151,7 +174,11 @@ export function transformImports(code: string): string {
             return t.stringLiteral(it.source)
           }),
         ),
-        t.arrowFunctionExpression(params, t.blockStatement(nonImportBody)),
+        t.arrowFunctionExpression(
+          params,
+          t.blockStatement(nonImportBody),
+          true,
+        ),
       ]),
     ),
   ])

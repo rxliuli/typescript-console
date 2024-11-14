@@ -30,10 +30,8 @@ import { h, render } from 'preact'
 const app = h('h1', null, 'Hello World!')
 render(app, document.body)
 `
-
   const transformed = transformImports(code)
-
-  expect(transformed).include('# sourceMappingURL=data:application/json;base64')
+  expect(transformed).include('//# sourceMappingURL=data:application/json;')
 })
 it('default import', async () => {
   const code = `
