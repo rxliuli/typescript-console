@@ -1,8 +1,6 @@
 import { formatWithCursor } from 'prettier/standalone'
-// @ts-expect-error
-import prettierPluginESTree from 'prettier/plugins/estree.mjs'
-// @ts-expect-error
-import prettierPluginTypescript from 'prettier/plugins/typescript.mjs'
+import prettierPluginESTree from 'prettier/plugins/estree'
+import prettierPluginTypescript from 'prettier/plugins/typescript'
 import { expose } from 'comlink'
 import { isWebWorker } from './isWebWorker'
 
