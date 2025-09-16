@@ -69,7 +69,7 @@ export function Editor() {
     return new Promise<void>((resolve, reject) => {
       browser.devtools.inspectedWindow.eval(
         code,
-        (result: any, isException: any) => {
+        (_result: any, isException: any) => {
           if (isException) {
             reject(new Error(isException.value || 'Evaluation failed'))
           } else {

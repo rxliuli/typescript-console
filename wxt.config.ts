@@ -16,7 +16,6 @@ export default defineConfig({
     const manifest: UserManifest = {
       name: 'TypeScript Console',
       description: 'Run and debug TypeScript code in the Browser DevTools.',
-      permissions: ['storage'],
       host_permissions: ['<all_urls>'],
       author: {
         email: 'rxliuli@gmail.com',
