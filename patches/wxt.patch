@@ -1,0 +1,12 @@
+diff --git a/dist/core/utils/env.mjs b/dist/core/utils/env.mjs
+index fdea86be6803ff509e8db9715a8dc591f1f14122..e2fd240bc5ee0760056a8deccc91a502d34d2e72 100644
+--- a/dist/core/utils/env.mjs
++++ b/dist/core/utils/env.mjs
+@@ -3,6 +3,7 @@ import { expand } from "dotenv-expand";
+ export function loadEnv(mode, browser) {
+   return expand(
+     config({
++      quiet: true,
+       // Files on top override files below
+       path: [
+         `.env.${mode}.${browser}.local`,

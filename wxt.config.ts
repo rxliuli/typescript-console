@@ -1,25 +1,52 @@
-import { defineConfig } from 'wxt'
-import path from 'path'
+import { defineConfig, UserManifest } from 'wxt'
+import tailwindcss from '@tailwindcss/vite'
 
-// See https://wxt.dev/api/config.html
 export default defineConfig({
-  srcDir: 'src',
-  modules: ['@wxt-dev/module-svelte'],
-  runner: {
-    disabled: true,
-  },
-  manifest: {
-    name: 'TypeScript Console',
-    content_security_policy: {
-      extension_pages:
-        "script-src 'self' 'wasm-unsafe-eval'; object-src 'self';",
-    },
-  },
+  modules: ['@wxt-dev/module-react'],
   vite: () => ({
+    plugins: [tailwindcss()] as any,
     resolve: {
       alias: {
-        $lib: path.resolve('./src/lib'),
+        '@': __dirname,
       },
     },
   }),
+  manifestVersion: 3,
+  manifest: (env) => {
+    const manifest: UserManifest = {
+      name: 'TypeScript Console',
+      description: 'Run and debug TypeScript code in the Browser DevTools.',
+      permissions: ['storage'],
+      host_permissions: ['<all_urls>'],
+      author: {
+        email: 'rxliuli@gmail.com',
+      },
+      action: {
+        default_icon: {
+          '16': 'icon/16.png',
+          '32': 'icon/32.png',
+          '48': 'icon/48.png',
+          '96': 'icon/96.png',
+          '128': 'icon/128.png',
+        },
+      },
+      homepage_url: 'https://rxliuli.com/projects/typescript-console',
+    }
+    if (env.browser === 'firefox') {
+      manifest.browser_specific_settings = {
+        gecko: {
+          id:
+            manifest.name!.toLowerCase().replaceAll(/[^a-z0-9]/g, '-') +
+            '@rxliuli.com',
+        },
+      }
+      // https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/manifest.json/author
+      // @ts-expect-error
+      manifest.author = 'rxliuli'
+    }
+    return manifest
+  },
+  webExt: {
+    disabled: true,
+  },
 })
