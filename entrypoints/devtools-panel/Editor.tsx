@@ -65,8 +65,8 @@ export function Editor() {
   }
 
   const injectAndExecuteCode = async (code: string) => {
-    // 使用 Chrome DevTools 协议注入并执行代码
     return new Promise<void>((resolve, reject) => {
+      // TODO: not working with Safari
       browser.devtools.inspectedWindow.eval(
         code,
         (_result: any, isException: any) => {
