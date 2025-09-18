@@ -3,7 +3,7 @@
   "description": "Run and debug TypeScript code in the Browser DevTools.",
   "private": true,
   "type": "module",
-  "version": "0.4.2",
+  "version": "0.4.3",
   "scripts": {
     "dev": "wxt",
     "dev:firefox": "wxt -b firefox",
