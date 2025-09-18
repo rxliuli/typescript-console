@@ -134,6 +134,12 @@ export function Editor() {
       if (!mounted) return
 
       monacoRef.current = monaco
+      monaco.editor.addKeybindingRules([
+        {
+          keybinding: monaco.KeyCode.F12,
+          command: null,
+        },
+      ])
       const defaults = monaco.languages.typescript.typescriptDefaults
       defaults.setCompilerOptions({
         target: monaco.languages.typescript.ScriptTarget.ESNext,

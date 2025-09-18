@@ -16,6 +16,10 @@ export default defineConfig({
     const manifest: UserManifest = {
       name: 'TypeScript Console',
       description: 'Run and debug TypeScript code in the Browser DevTools.',
+      content_security_policy: {
+        extension_pages:
+          "script-src 'self' 'wasm-unsafe-eval'; object-src 'self';",
+      },
       author: {
         email: 'rxliuli@gmail.com',
       },
