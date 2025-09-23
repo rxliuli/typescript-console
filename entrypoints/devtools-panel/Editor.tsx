@@ -45,9 +45,11 @@ export function Editor() {
 
   const compileCode = async (code: string, controller: AbortController) => {
     if (!isInit) {
+      console.log('Initializing esbuild...')
       try {
         await initialize({
           wasmURL: wasmUrl,
+          worker: false,
         })
       } catch (error) {
         if (
@@ -59,6 +61,7 @@ export function Editor() {
       }
       setIsInit(true)
     }
+    console.log('Bundling with esbuild...')
     return await bundle(code, {
       signal: controller.signal,
     })
@@ -91,11 +94,12 @@ export function Editor() {
     executionStore.start(controller)
     try {
       await editorRef.current?.getAction('editor.action.formatDocument')?.run()
+      console.log('Executing code...')
       const buildCode = await compileCode(
         editorRef.current?.getValue() || '',
         controller,
       )
-      console.log('buildCode', buildCode)
+      console.log('injected and executing code...')
       await injectAndExecuteCode(buildCode)
       toast.success('Code executed successfully')
     } catch (error) {
@@ -155,9 +159,11 @@ export function Editor() {
       defaults.setDiagnosticsOptions({ diagnosticCodesToIgnore: [1375] })
       monaco.languages.registerDocumentFormattingEditProvider('typescript', {
         provideDocumentFormattingEdits: async (model, _options, token) => {
+          console.log('Formatting code...')
           const worker = new FormatCodeWorker()
           const f = wrap<typeof formatCode>(worker)
           const formattedCode = await f(model.getValue(), 0)
+          console.log('Code formatted')
           return [
             {
               text: formattedCode.formatted,
