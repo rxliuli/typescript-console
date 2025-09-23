@@ -49,7 +49,8 @@ export function Editor() {
       try {
         await initialize({
           wasmURL: wasmUrl,
-          worker: false,
+          // Firefox Extension Page CSP disable blob worker
+          worker: import.meta.env.CHROME,
         })
       } catch (error) {
         if (
