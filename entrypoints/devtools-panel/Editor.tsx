@@ -185,6 +185,11 @@ export function Editor() {
         wordWrap: 'on',
         tabSize: 2,
         insertSpaces: true,
+        // 确保编辑器可以正常接收键盘输入
+        readOnly: false,
+        domReadOnly: false,
+        // 防止某些快捷键被错误处理
+        contextmenu: true,
       })
 
       if (!mounted) {
@@ -213,7 +218,7 @@ export function Editor() {
       })
 
       // 添加编辑器特定的键盘事件监听器
-      editor.onKeyDown(handleKeyDown)
+      editor.onKeyDown(handleEditorKeyDown)
 
       // editor 初始化完成后，执行一次 ta
       ta.dl(editor.getValue())
@@ -249,20 +254,34 @@ export function Editor() {
   const handleResize = () => {
     editorRef.current?.layout()
   }
-  function handleKeyDown(event: KeyboardEvent | Monaco.IKeyboardEvent) {
+  
+  function handleGlobalKeyDown(event: KeyboardEvent) {
+    if ((event.ctrlKey || event.metaKey) && event.code === 'KeyS') {
+      const activeElement = document.activeElement
+      const editorDom = editorContainerRef.current
+      if (editorDom && !editorDom.contains(activeElement)) {
+        event.preventDefault()
+        event.stopPropagation()
+        execute()
+      }
+    }
+  }
+
+  function handleEditorKeyDown(event: Monaco.IKeyboardEvent) {
     if ((event.ctrlKey || event.metaKey) && event.code === 'KeyS') {
       event.preventDefault()
       event.stopPropagation()
       execute()
     }
   }
+  
   useMount(() => {
     window.addEventListener('resize', handleResize)
-    window.addEventListener('keydown', handleKeyDown)
+    window.addEventListener('keydown', handleGlobalKeyDown)
 
     return () => {
       window.removeEventListener('resize', handleResize)
-      window.removeEventListener('keydown', handleKeyDown)
+      window.removeEventListener('keydown', handleGlobalKeyDown)
     }
   })
 
