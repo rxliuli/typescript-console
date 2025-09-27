@@ -1,7 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
 import type * as Monaco from 'monaco-editor/esm/vs/editor/editor.api'
-import { initialize } from 'esbuild-wasm'
-import wasmUrl from 'esbuild-wasm/esbuild.wasm?url'
 import { toast } from 'sonner'
 import { serializeError } from 'serialize-error'
 import type { typeAcquisition } from './utils/initTypeAcquisition'
@@ -13,7 +11,7 @@ import { useExecutionStore } from './store'
 import { useEventBus } from './utils/useEventBus'
 import { useTheme } from 'next-themes'
 import { useMount } from 'react-use'
-import { bundle } from './utils/bundle'
+import { bundle, initializeEsbuild } from './utils/bundle'
 
 const STORAGE_KEY = 'devtools-editor-content'
 
@@ -38,35 +36,9 @@ export function Editor() {
   const editorContainerRef = useRef<HTMLDivElement>(null)
   const editorRef = useRef<Monaco.editor.IStandaloneCodeEditor | null>(null)
   const monacoRef = useRef<typeof Monaco | null>(null)
-  const [isInit, setIsInit] = useState(false)
   const { resolvedTheme } = useTheme()
 
   const executionStore = useExecutionStore()
-
-  const compileCode = async (code: string, controller: AbortController) => {
-    if (!isInit) {
-      console.log('Initializing esbuild...')
-      try {
-        await initialize({
-          wasmURL: wasmUrl,
-          // Firefox Extension Page CSP disable blob worker
-          worker: import.meta.env.CHROME,
-        })
-      } catch (error) {
-        if (
-          serializeError(error as Error).message !==
-          'Cannot call "initialize" more than once'
-        ) {
-          throw error
-        }
-      }
-      setIsInit(true)
-    }
-    console.log('Bundling with esbuild...')
-    return await bundle(code, {
-      signal: controller.signal,
-    })
-  }
 
   const injectAndExecuteCode = async (code: string) => {
     return new Promise<void>((resolve, reject) => {
@@ -96,10 +68,9 @@ export function Editor() {
     try {
       await editorRef.current?.getAction('editor.action.formatDocument')?.run()
       console.log('Executing code...')
-      const buildCode = await compileCode(
-        editorRef.current?.getValue() || '',
-        controller,
-      )
+      const buildCode = await bundle(editorRef.current?.getValue() || '', {
+        signal: controller.signal,
+      })
       console.log('injected and executing code...')
       await injectAndExecuteCode(buildCode)
       toast.success('Code executed successfully')
@@ -254,7 +225,7 @@ export function Editor() {
   const handleResize = () => {
     editorRef.current?.layout()
   }
-  
+
   function handleGlobalKeyDown(event: KeyboardEvent) {
     if ((event.ctrlKey || event.metaKey) && event.code === 'KeyS') {
       const activeElement = document.activeElement
@@ -274,7 +245,7 @@ export function Editor() {
       execute()
     }
   }
-  
+
   useMount(() => {
     window.addEventListener('resize', handleResize)
     window.addEventListener('keydown', handleGlobalKeyDown)

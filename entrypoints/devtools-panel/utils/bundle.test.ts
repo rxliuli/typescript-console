@@ -1,13 +1,5 @@
-import { beforeAll, expect, it, vi } from 'vitest'
-import { bundle } from '../bundle'
-import { initialize } from 'esbuild-wasm'
-import wasmUrl from 'esbuild-wasm/esbuild.wasm?url'
-
-beforeAll(async () => {
-  await initialize({
-    wasmURL: wasmUrl,
-  })
-})
+import { expect, it } from 'vitest'
+import { bundle } from './bundle'
 
 it('dummy test', async () => {
   const code = `
