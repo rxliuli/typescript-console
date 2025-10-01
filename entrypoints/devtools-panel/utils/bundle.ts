@@ -1,10 +1,12 @@
 import { build, initialize } from 'esbuild-wasm'
 import { esbuildPluginFs } from './fs'
 import { esm } from './esm'
-import { transformTopLevelAwait } from './transformTopLevelAwait'
+import { createTopLevelAwaitTransformer } from './transformTopLevelAwait'
+import { createRemoveExportsTransformer } from './transformExports'
 import wasmUrl from 'esbuild-wasm/esbuild.wasm?url'
 import { serializeError } from 'serialize-error'
 import MagicString from 'magic-string'
+import * as ts from 'typescript'
 
 function transformJSX(code: string) {
   const imports = [
@@ -67,6 +69,70 @@ export async function initializeEsbuild() {
   isInit = true
 }
 
+/**
+ * Apply both transforms (remove exports and top-level await) in a single AST pass
+ */
+export function applyTransforms(
+  code: string,
+  fileName = 'example.tsx',
+): string {
+  const sourceFile = ts.createSourceFile(
+    fileName,
+    code,
+    ts.ScriptTarget.Latest,
+    true,
+    ts.ScriptKind.TSX,
+  )
+
+  // Check if we need top-level await transformation
+  let hasTopLevelAwait = false
+  function checkTopLevelAwait(node: ts.Node) {
+    if (ts.isAwaitExpression(node) && isAtTopLevel(node)) {
+      hasTopLevelAwait = true
+    }
+    ts.forEachChild(node, checkTopLevelAwait)
+  }
+  checkTopLevelAwait(sourceFile)
+
+  const resultVariableName = '__result__' + Math.random().toString(16).slice(2)
+
+  // Apply both transformers in sequence
+  const transformers = [
+    createRemoveExportsTransformer(),
+    ...(hasTopLevelAwait
+      ? [createTopLevelAwaitTransformer(resultVariableName)]
+      : []),
+  ]
+
+  const result = ts.transform(sourceFile, transformers)
+  const transformedSourceFile = result.transformed[0]
+
+  const printer = ts.createPrinter({
+    newLine: ts.NewLineKind.LineFeed,
+    removeComments: false,
+  })
+
+  const output = printer.printFile(transformedSourceFile)
+  result.dispose()
+
+  return output
+}
+
+function isAtTopLevel(node: ts.Node): boolean {
+  let current = node.parent
+  while (current) {
+    if (
+      ts.isFunctionLike(current) ||
+      ts.isClassDeclaration(current) ||
+      ts.isMethodDeclaration(current)
+    ) {
+      return false
+    }
+    current = current.parent
+  }
+  return true
+}
+
 export async function bundle(
   code: string,
   options?: {
@@ -77,7 +143,7 @@ export async function bundle(
 ) {
   await initializeEsbuild()
   const before = transformJSX(code)
-  const after = transformTopLevelAwait(before, 'example.tsx')
+  const after = applyTransforms(before, 'example.tsx')
   const r = await build({
     entryPoints: ['example.tsx'],
     jsx: 'transform',

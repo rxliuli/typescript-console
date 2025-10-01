@@ -1,8 +1,8 @@
 import { expect, it } from 'vitest'
-import { transformTopLevelAwait } from './transformTopLevelAwait'
+import { applyTransforms } from './bundle'
 
 it('simple await', () => {
-  const code = transformTopLevelAwait(`
+  const code = applyTransforms(`
     console.log(1)
     await new Promise(res => setTimeout(res, 1000))
     console.log(2)
@@ -11,7 +11,7 @@ it('simple await', () => {
 })
 it('await value', async () => {
   expect(await eval(`Promise.resolve(1)`)).eq(1)
-  const code = transformTopLevelAwait(`await Promise.resolve(1)`)
+  const code = applyTransforms(`await Promise.resolve(1)`)
   expect(code).include('(async () => {')
   const r = await eval(code)
   expect(r).eq(1)
@@ -21,12 +21,12 @@ it('no includes await', () => {
     console.log(1)
     console.log(2)
   `
-  const code = transformTopLevelAwait(c)
+  const code = applyTransforms(c)
   expect(code).include('console.log(1)')
   expect(code).include('console.log(2)')
 })
 it('includes imports', async () => {
-  const code = transformTopLevelAwait(`
+  const code = applyTransforms(`
     import { add } from 'es-toolkit/compat'
 
     await Promise.resolve(add(1, 2))
@@ -38,7 +38,7 @@ it('includes await but not in start', async () => {
   const r = await Promise.resolve(1)
   r
   `.trim()
-  const code = transformTopLevelAwait(c)
+  const code = applyTransforms(c)
   const r = await eval(code)
   expect(r).eq(1)
 })
