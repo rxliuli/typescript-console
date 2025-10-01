@@ -7,6 +7,7 @@ import {
 } from '@/components/ui/menubar'
 import { em, useExecutionStore } from './store'
 import { PlayIcon, Loader2Icon } from 'lucide-react'
+import { FaDiscord } from 'react-icons/fa'
 import {
   Tooltip,
   TooltipContent,
@@ -66,6 +67,26 @@ export function Toolbar() {
           </TooltipProvider>
         </MenubarTrigger>
       </MenubarMenu>
+      <div className="ml-auto">
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                size="icon"
+                variant="ghost"
+                onClick={() =>
+                  window.open('https://discord.com/invite/fErBc3wYrC', '_blank')
+                }
+              >
+                <FaDiscord className="w-4 h-4 text-blue-500" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Join Discord Community</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      </div>
     </Menubar>
   )
 }
