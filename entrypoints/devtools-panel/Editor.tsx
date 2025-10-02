@@ -12,6 +12,8 @@ import { useEventBus } from './utils/useEventBus'
 import { useTheme } from 'next-themes'
 import { useMount } from 'react-use'
 import { bundle, initializeEsbuild } from './utils/bundle'
+import { fileSelector } from '@/lib/fileSelector'
+import { saveAs } from 'file-saver'
 
 const STORAGE_KEY = 'devtools-editor-content'
 
@@ -260,6 +262,43 @@ export function Editor() {
   useEventBus('runScript', execute)
   useEventBus('changeFontSize', (fontSize) => {
     editorRef.current?.updateOptions({ fontSize })
+  })
+  useEventBus('openFile', async () => {
+    if (!editorRef.current) {
+      toast.error('Editor not initialized')
+      return
+    }
+    const files = await fileSelector({ accept: '.ts,.tsx,.js,.jsx' })
+    if (files && files.length > 0) {
+      const file = files[0]
+      const text = await file.text()
+      const editor = editorRef.current
+      const model = editor.getModel()
+      if (model) {
+        const fullRange = model.getFullModelRange()
+        editor.executeEdits('openFile', [
+          {
+            range: fullRange,
+            text: text,
+          },
+        ])
+      }
+      toast.success(`Loaded file: ${file.name}`)
+    }
+  })
+  useEventBus('saveFile', () => {
+    if (!editorRef.current) {
+      toast.error('Editor not initialized')
+      return
+    }
+    const editor = editorRef.current
+    const model = editor.getModel()
+    if (model) {
+      const blob = new Blob([model.getValue()], {
+        type: 'text/plain;charset=utf-8',
+      })
+      saveAs(blob, 'script.ts')
+    }
   })
 
   return <div className="w-full h-full flex-1" ref={editorContainerRef} />

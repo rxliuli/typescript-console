@@ -8,6 +8,9 @@ export interface Events {
   openSettings: () => void
   openAbout: () => void
 
+  openFile: () => void
+  saveFile: () => void
+
   changeFontSize: (fontSize: number) => void
   setExecuting: (isExecuting: boolean) => void
 }

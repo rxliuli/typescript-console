@@ -47,6 +47,13 @@ export function Toolbar() {
         </MenubarContent>
       </MenubarMenu>
       <MenubarMenu>
+        <MenubarTrigger>File</MenubarTrigger>
+        <MenubarContent>
+          <MenubarItem onClick={() => em.emit('openFile')}>Open File</MenubarItem>
+          <MenubarItem onClick={() => em.emit('saveFile')}>Save File</MenubarItem>
+        </MenubarContent>
+      </MenubarMenu>
+      <MenubarMenu>
         <MenubarTrigger asChild={true}>
           <TooltipProvider>
             <Tooltip>
