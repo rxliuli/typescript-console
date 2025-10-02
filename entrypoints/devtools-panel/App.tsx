@@ -13,7 +13,7 @@ export function App() {
         <div className="w-full h-screen flex flex-col">
           <Toolbar />
           <Editor />
-          <Toaster richColors />
+          <Toaster richColors closeButton={true} />
           <OpenSettings />
           <OpenAbout />
         </div>
