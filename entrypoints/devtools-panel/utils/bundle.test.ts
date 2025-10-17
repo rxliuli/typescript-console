@@ -1,7 +1,15 @@
 import { expect, it } from 'vitest'
 import { bundle } from './bundle'
 
-it('dummy test', async () => {
+it('bundle simple code', async () => {
+  const code = `
+    console.log('Hello, World!')
+  `.trim()
+  const r = await bundle(code)
+  expect(r).include('console.log("Hello, World!")')
+})
+
+it('import package', async () => {
   const code = `
     import { add } from 'es-toolkit/compat'
     

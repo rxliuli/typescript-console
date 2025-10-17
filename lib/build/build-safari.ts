@@ -10,7 +10,7 @@ dotenv.config({ path: path.resolve(rootPath, '.env.local'), quiet: true })
 process.env.NODE_ENV = 'production'
 
 const ProjectName = 'TypeScript Console'
-const AppCategory = 'public.app-category.productivity'
+const AppCategory = 'public.app-category.developer-tools'
 const DevelopmentTeam = process.env.DEVELOPMENT_TEAM
 
 await $`pnpm wxt build -b safari`

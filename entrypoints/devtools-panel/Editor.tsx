@@ -14,6 +14,8 @@ import { useMount } from 'react-use'
 import { bundle, initializeEsbuild } from './utils/bundle'
 import { fileSelector } from '@/lib/fileSelector'
 import { saveAs } from 'file-saver'
+import { injectAndExecuteCode } from '@/lib/ext/injectAndExecuteCode'
+import { messager } from '@/lib/messager'
 
 const STORAGE_KEY = 'devtools-editor-content'
 
@@ -42,22 +44,6 @@ export function Editor() {
 
   const executionStore = useExecutionStore()
 
-  const injectAndExecuteCode = async (code: string) => {
-    return new Promise<void>((resolve, reject) => {
-      // TODO: not working with Safari
-      browser.devtools.inspectedWindow.eval(
-        code,
-        (_result: any, isException: any) => {
-          if (isException) {
-            reject(new Error(isException.value || 'Evaluation failed'))
-          } else {
-            resolve()
-          }
-        },
-      )
-    })
-  }
-
   const execute = async () => {
     if (executionStore.isExecuting) {
       executionStore.stop()
@@ -74,7 +60,11 @@ export function Editor() {
         signal: controller.signal,
       })
       console.log('injected and executing code...')
-      await injectAndExecuteCode(buildCode)
+      if (import.meta.env.SAFARI) {
+        await messager.sendMessage('executeCode', buildCode)
+      } else {
+        await injectAndExecuteCode(buildCode)
+      }
       toast.success('Code executed successfully')
     } catch (error) {
       if (error instanceof Error && error.message.includes('Abort')) {
