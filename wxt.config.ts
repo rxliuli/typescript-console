@@ -46,6 +46,10 @@ export default defineConfig({
       // @ts-expect-error
       manifest.author = 'rxliuli'
     }
+    if (env.browser === 'safari') {
+      manifest.name = 'Type-Safe Console'
+      manifest.description = 'TypeScript Support for DevTools'
+    }
     return manifest
   },
   webExt: {

@@ -9,7 +9,7 @@ dotenv.config({ path: path.resolve(rootPath, '.env.local'), quiet: true })
 // https://github.com/vitejs/vite/issues/5885
 process.env.NODE_ENV = 'production'
 
-const ProjectName = 'TypeScript Console'
+const ProjectName = 'Type-Safe Console'
 const AppCategory = 'public.app-category.developer-tools'
 const DevelopmentTeam = process.env.DEVELOPMENT_TEAM
 
