@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import type * as Monaco from 'monaco-editor/esm/vs/editor/editor.api'
 import { toast } from 'sonner'
 import { serializeError } from 'serialize-error'
@@ -10,8 +10,8 @@ import { wrap, proxy } from 'comlink'
 import { useExecutionStore } from './store'
 import { useEventBus } from './utils/useEventBus'
 import { useTheme } from 'next-themes'
-import { useMount } from 'react-use'
-import { bundle, initializeEsbuild } from './utils/bundle'
+import { useEffectOnce, useMount } from 'react-use'
+import { bundle } from './utils/bundle'
 import { fileSelector } from '@/lib/fileSelector'
 import { saveAs } from 'file-saver'
 import { injectAndExecuteCode } from '@/lib/ext/injectAndExecuteCode'
@@ -56,7 +56,12 @@ export function Editor() {
     try {
       await editorRef.current?.getAction('editor.action.formatDocument')?.run()
       console.log('Executing code...')
-      const buildCode = await bundle(editorRef.current?.getValue() || '', {
+      const code = editorRef.current?.getValue()
+      if (!code) {
+        toast.error('No code to execute')
+        return
+      }
+      const buildCode = await bundle(code, {
         signal: controller.signal,
       })
       console.log('injected and executing code...')
@@ -92,7 +97,7 @@ export function Editor() {
   }
 
   // Initialize Monaco Editor
-  useMount(() => {
+  useEffectOnce(() => {
     let mounted = true
 
     const initializeEditor = async () => {
@@ -238,7 +243,7 @@ export function Editor() {
     }
   }
 
-  useMount(() => {
+  useEffectOnce(() => {
     window.addEventListener('resize', handleResize)
     window.addEventListener('keydown', handleGlobalKeyDown)
 
