@@ -32,7 +32,7 @@ export default defineConfig({
           '128': 'icon/128.png',
         },
       },
-      homepage_url: 'https://rxliuli.com/projects/typescript-console',
+      homepage_url: 'https://rxliuli.com/project/typescript-console',
     }
     if (env.browser === 'firefox') {
       manifest.browser_specific_settings = {

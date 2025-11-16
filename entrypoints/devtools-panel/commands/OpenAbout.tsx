@@ -12,6 +12,7 @@ import copy from 'copy-to-clipboard'
 import esbuildPkg from 'esbuild-wasm/package.json'
 import monacoPkg from 'monaco-editor/package.json'
 import typescriptPkg from 'typescript/package.json'
+import { version } from '../../../package.json'
 
 export function OpenAbout() {
   const [open, setOpen] = useState(false)
@@ -22,13 +23,13 @@ export function OpenAbout() {
 
   const handleCopy = async () => {
     const text = [
-      `Version: ${import.meta.env.version}`,
+      `Version: ${version}`,
       'Copyright © 2024 rxliuli',
       `TypeScript: ${typescriptPkg.version}`,
       `Monaco-Editor: ${monacoPkg.version}`,
       `ESBuild: ${esbuildPkg.version}`,
     ].join('\n')
-    
+
     console.log('aboutRef?.textContent', text)
     copy(text)
     setOpen(false)
@@ -41,7 +42,7 @@ export function OpenAbout() {
           <DialogTitle>About</DialogTitle>
         </DialogHeader>
         <div>
-          <div>Version: {import.meta.env.version}</div>
+          <div>Version: {version}</div>
           <div>Copyright © 2024 rxliuli</div>
           <div>TypeScript: {typescriptPkg.version}</div>
           <div>Monaco-Editor: {monacoPkg.version}</div>

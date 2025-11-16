@@ -1,12 +1,11 @@
 import {
-  Menubar,
-  MenubarContent,
-  MenubarItem,
-  MenubarMenu,
-  MenubarTrigger,
-} from '@/components/ui/menubar'
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 import { em, useExecutionStore } from './store'
-import { PlayIcon, Loader2Icon } from 'lucide-react'
+import { PlayIcon, Loader2Icon, MenuIcon } from 'lucide-react'
 import { FaDiscord } from 'react-icons/fa'
 import {
   Tooltip,
@@ -22,11 +21,7 @@ export function Toolbar() {
 
   const getIcon = () => {
     if (isExecuting) {
-      return (
-        <Button size="icon" variant="destructive">
-          <Loader2Icon className="w-4 h-4 animate-spin text-muted-foreground" />
-        </Button>
-      )
+      return <Loader2Icon className="w-4 h-4 animate-spin" />
     }
     return <PlayIcon className="w-4 h-4" />
   }
@@ -36,44 +31,47 @@ export function Toolbar() {
   }
 
   return (
-    <Menubar className="toolbar">
-      <MenubarMenu>
-        <MenubarTrigger>TypeScript Console</MenubarTrigger>
-        <MenubarContent>
-          <MenubarItem onClick={() => em.emit('openAbout')}>About</MenubarItem>
-          <MenubarItem onClick={() => em.emit('openSettings')}>
+    <div className="toolbar flex items-center gap-1 px-2 py-1 border-b">
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" size="sm">
+            <MenuIcon className="w-4 h-4 mr-1" />
+            Menu
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent>
+          <DropdownMenuItem onClick={() => em.emit('openFile')}>
+            Open File
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => em.emit('saveFile')}>
+            Save File
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => em.emit('openSettings')}>
             Settings
-          </MenubarItem>
-        </MenubarContent>
-      </MenubarMenu>
-      <MenubarMenu>
-        <MenubarTrigger>File</MenubarTrigger>
-        <MenubarContent>
-          <MenubarItem onClick={() => em.emit('openFile')}>Open File</MenubarItem>
-          <MenubarItem onClick={() => em.emit('saveFile')}>Save File</MenubarItem>
-        </MenubarContent>
-      </MenubarMenu>
-      <MenubarMenu>
-        <MenubarTrigger asChild={true}>
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  onClick={() => (isExecuting ? stop() : em.emit('runScript'))}
-                  disabled={false}
-                >
-                  {getIcon()}
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>{getTooltipText()}</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        </MenubarTrigger>
-      </MenubarMenu>
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => em.emit('openAbout')}>
+            About
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              size="icon"
+              variant={isExecuting ? 'destructive' : 'ghost'}
+              onClick={() => (isExecuting ? stop() : em.emit('runScript'))}
+            >
+              {getIcon()}
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>{getTooltipText()}</p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+
       <div className="ml-auto">
         <TooltipProvider>
           <Tooltip>
@@ -94,6 +92,6 @@ export function Toolbar() {
           </Tooltip>
         </TooltipProvider>
       </div>
-    </Menubar>
+    </div>
   )
 }
