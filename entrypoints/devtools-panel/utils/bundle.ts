@@ -1,6 +1,6 @@
 import { build, initialize } from 'esbuild-wasm'
-import { esbuildPluginFs } from './fs'
-import { esm } from './esm'
+import { fs } from './plugins/fs'
+import { esm } from './plugins/esm'
 import { createTopLevelAwaitTransformer } from './transformTopLevelAwait'
 import { createRemoveExportsTransformer } from './transformExports'
 import wasmUrl from 'esbuild-wasm/esbuild.wasm?url'
@@ -152,7 +152,7 @@ export async function bundle(
     target: 'esnext',
     platform: 'browser',
     plugins: [
-      esbuildPluginFs({
+      fs({
         'example.tsx': after,
       }),
       esm({

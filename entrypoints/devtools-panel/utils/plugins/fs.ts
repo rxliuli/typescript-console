@@ -5,7 +5,7 @@ import type { Plugin } from 'esbuild-wasm'
  * copy: https://github.com/hyrious/esbuild-repl/blob/main/src/helpers/fs.ts
  * @param modules
  */
-export function esbuildPluginFs(files: Record<string, string>): Plugin {
+export function fs(files: Record<string, string>): Plugin {
   return {
     name: 'esbuild-plugin-fs',
     setup({ onResolve, onLoad }) {
