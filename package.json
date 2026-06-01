@@ -67,7 +67,7 @@
     "dotenv": "^17.2.2",
     "find-up": "^8.0.0",
     "is-ci": "^4.1.0",
-    "playwright": "^1.55.0",
+    "playwright": "^1.60.0",
     "preact": "^10.27.2",
     "solid-js": "^1.9.9",
     "typescript": "^5.9.2",

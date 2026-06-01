@@ -7,6 +7,7 @@ import wasmUrl from 'esbuild-wasm/esbuild.wasm?url'
 import { serializeError } from 'serialize-error'
 import MagicString from 'magic-string'
 import * as ts from 'typescript'
+import { inlineWorker } from './plugins/worker'
 
 function transformJSX(code: string) {
   const imports = [
@@ -158,6 +159,7 @@ export async function bundle(
       esm({
         signal: options?.signal,
       }),
+      inlineWorker(),
     ],
     treeShaking: true,
     write: false,
